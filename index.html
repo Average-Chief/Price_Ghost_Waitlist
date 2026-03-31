@@ -658,7 +658,7 @@ body::before {
       <div class="form-box" id="form-box">
         <div class="form-headline">Get the scoop before everyone else.</div>
         <div class="form-sub">
-          <strong>267 founders</strong> already watching. Waitlist members lock in
+          <strong id="waitlist-count">—</strong> founders already watching. Waitlist members lock in
           <strong>50% off forever</strong> when we launch.
         </div>
         <div class="input-row">
@@ -724,25 +724,116 @@ body::before {
 </footer>
 
 <script>
-  const tickerItems = [
-    { label: 'Notion',   text: 'Plus Plan +$4/mo',       cls: 't-up'   },
-    { label: 'Linear',   text: 'Free Tier Removed',       cls: 't-up'   },
-    { label: 'Vercel',   text: 'Pro Plan +$10/mo',        cls: 't-up'   },
-    { label: 'Loom',     text: 'Business −$6/mo',         cls: 't-down' },
-    { label: 'Figma',    text: 'Org Tier +$5/seat',       cls: 't-up'   },
-    { label: 'Stripe',   text: 'API Fees −0.1%',          cls: 't-down' },
-    { label: 'Intercom', text: 'New Scale Plan Added',    cls: 't-new'  },
-    { label: 'GitHub',   text: 'Copilot +$4/mo',          cls: 't-up'   },
-    { label: 'Slack',    text: 'Pro Annual Discount',     cls: 't-down' },
-    { label: 'Hubspot',  text: 'Free CRM Limits Cut',     cls: 't-up'   },
-  ];
+  // ── SUPABASE CONFIG ──
+  const SUPABASE_URL = 'https://ccfhdprbsjzyfkgmrlik.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZmhkcHJic2p6eWZrZ21ybGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NjczMjUsImV4cCI6MjA5MDU0MzMyNX0.H_l-LxhXf-n-Cw1_4YBcBWPoyEaqTm5V1DdhPD9C7Xo';
 
-  const alerts = [
-    { severity: 'critical', sevClass: 'sev-critical', time: '2 min ago',  company: 'Linear',   description: 'Free tier silently removed. All existing users must upgrade.',         change: 'Free plan → Removed',       changeType: 'change-up',   arrow: '↑' },
-    { severity: 'high',     sevClass: 'sev-high',     time: '41 min ago', company: 'Notion',   description: 'Plus plan increased for new signups. Annual pricing unaffected.',      change: '$16/mo → $20/mo (+25%)',    changeType: 'change-up',   arrow: '↑' },
-    { severity: 'high',     sevClass: 'sev-high',     time: '3 hrs ago',  company: 'Vercel',   description: 'Pro plan monthly rate raised. Annual billing remains the same.',       change: '$20/mo → $30/mo (+50%)',    changeType: 'change-up',   arrow: '↑' },
-    { severity: 'medium',   sevClass: 'sev-medium',   time: '7 hrs ago',  company: 'Loom',     description: 'Business plan discounted, likely a response to Notion Clips.',         change: '$16/seat → $10/seat (−38%)', changeType: 'change-down', arrow: '↓' },
-    { severity: 'medium',   sevClass: 'sev-medium',   time: 'Yesterday',  company: 'Figma',    description: 'New Enterprise AI add-on introduced at $15/seat/mo.',                  change: 'New plan added',            changeType: 'change-up',   arrow: '+' },
+  const headers = {
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+  };
+
+  // ── FETCH LIVE COUNT ──
+  async function fetchCount() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist?select=id`, {
+        headers: { ...headers, 'Prefer': 'count=exact', 'Range': '0-0' }
+      });
+      const count = res.headers.get('content-range')?.split('/')[1];
+      const el = document.getElementById('waitlist-count');
+      if (count !== null && count !== undefined && count !== '*') {
+        // animate the number counting up
+        const target = parseInt(count, 10);
+        let current = Math.max(0, target - 30);
+        const step = () => {
+          current = Math.min(current + 1, target);
+          el.textContent = current.toLocaleString();
+          if (current < target) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = '—';
+      }
+    } catch (e) {
+      document.getElementById('waitlist-count').textContent = '—';
+    }
+  }
+
+  // ── SUBMIT EMAIL ──
+  async function handleJoin() {
+    const input = document.getElementById('email-input');
+    const btn   = document.querySelector('.input-row button');
+    const email = input.value.trim();
+
+    // basic validation
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      input.style.outline = '2px solid #e8503a';
+      input.placeholder = 'Enter a valid email';
+      setTimeout(() => { input.style.outline = ''; input.placeholder = 'your@email.com'; }, 1800);
+      return;
+    }
+
+    // loading state
+    btn.textContent = 'Joining…';
+    btn.disabled = true;
+    input.disabled = true;
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+        method: 'POST',
+        headers: { ...headers, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (res.status === 201) {
+        // success — show confirmation
+        document.getElementById('form-box').classList.add('hidden');
+        document.getElementById('success-box').classList.add('visible');
+        // refresh the counter to reflect new signup
+        fetchCount();
+
+      } else if (res.status === 409) {
+        // duplicate email — already on the list
+        btn.textContent = 'Get Access →';
+        btn.disabled = false;
+        input.disabled = false;
+        input.style.outline = '2px solid #f59e0b';
+        input.value = '';
+        input.placeholder = 'Already on the list!';
+        setTimeout(() => {
+          input.style.outline = '';
+          input.placeholder = 'your@email.com';
+        }, 2500);
+
+      } else {
+        throw new Error(`Unexpected status ${res.status}`);
+      }
+
+    } catch (e) {
+      btn.textContent = 'Try again';
+      btn.disabled = false;
+      input.disabled = false;
+      input.style.outline = '2px solid #e8503a';
+      setTimeout(() => {
+        btn.textContent = 'Get Access →';
+        input.style.outline = '';
+      }, 2000);
+    }
+  }
+
+  // ── TICKER ──
+  const tickerItems = [
+    { label: 'Notion',   text: 'Plus Plan +$4/mo',    cls: 't-up'   },
+    { label: 'Linear',   text: 'Free Tier Removed',    cls: 't-up'   },
+    { label: 'Vercel',   text: 'Pro Plan +$10/mo',     cls: 't-up'   },
+    { label: 'Loom',     text: 'Business −$6/mo',      cls: 't-down' },
+    { label: 'Figma',    text: 'Org Tier +$5/seat',    cls: 't-up'   },
+    { label: 'Stripe',   text: 'API Fees −0.1%',       cls: 't-down' },
+    { label: 'Intercom', text: 'New Scale Plan Added', cls: 't-new'  },
+    { label: 'GitHub',   text: 'Copilot +$4/mo',       cls: 't-up'   },
+    { label: 'Slack',    text: 'Pro Annual Discount',  cls: 't-down' },
+    { label: 'Hubspot',  text: 'Free CRM Limits Cut',  cls: 't-up'   },
   ];
 
   function buildTicker() {
@@ -755,6 +846,15 @@ body::before {
     });
   }
 
+  // ── ALERTS FEED ──
+  const alerts = [
+    { severity: 'critical', sevClass: 'sev-critical', time: '2 min ago',  company: 'Linear',   description: 'Free tier silently removed. All existing users must upgrade.',       change: 'Free plan → Removed',        changeType: 'change-up',   arrow: '↑' },
+    { severity: 'high',     sevClass: 'sev-high',     time: '41 min ago', company: 'Notion',   description: 'Plus plan increased for new signups. Annual pricing unaffected.',    change: '$16/mo → $20/mo (+25%)',     changeType: 'change-up',   arrow: '↑' },
+    { severity: 'high',     sevClass: 'sev-high',     time: '3 hrs ago',  company: 'Vercel',   description: 'Pro plan monthly rate raised. Annual billing remains the same.',     change: '$20/mo → $30/mo (+50%)',     changeType: 'change-up',   arrow: '↑' },
+    { severity: 'medium',   sevClass: 'sev-medium',   time: '7 hrs ago',  company: 'Loom',     description: 'Business plan discounted, likely a response to Notion Clips.',       change: '$16/seat → $10/seat (−38%)', changeType: 'change-down', arrow: '↓' },
+    { severity: 'medium',   sevClass: 'sev-medium',   time: 'Yesterday',  company: 'Figma',    description: 'New Enterprise AI add-on introduced at $15/seat/mo.',                change: 'New plan added',             changeType: 'change-up',   arrow: '+' },
+  ];
+
   function buildFeed() {
     const feed = document.getElementById('alerts-feed');
     alerts.forEach((a, i) => {
@@ -762,34 +862,26 @@ body::before {
       card.className = 'alert-card';
       card.style.animationDelay = `${0.65 + i * 0.08}s`;
       card.innerHTML = `
-        <div class="alert-meta">
-          <span class="alert-severity ${a.sevClass}">${a.severity}</span>
-          <span class="alert-time">${a.time}</span>
+        <div class="alert-card-inner">
+          <div class="alert-meta">
+            <span class="alert-severity ${a.sevClass}">${a.severity}</span>
+            <span class="alert-time">${a.time}</span>
+          </div>
+          <div class="alert-company">${a.company}</div>
+          <div class="alert-description">${a.description}</div>
+          <div class="alert-change ${a.changeType}"><span>${a.arrow}</span>${a.change}</div>
         </div>
-        <div class="alert-company">${a.company}</div>
-        <div class="alert-description">${a.description}</div>
-        <div class="alert-change ${a.changeType}"><span>${a.arrow}</span>${a.change}</div>
       `;
       feed.appendChild(card);
     });
   }
 
-  function handleJoin() {
-    const input = document.getElementById('email-input');
-    const email = input.value.trim();
-    if (!email || !email.includes('@')) {
-      input.style.outline = '2px solid #e8503a';
-      input.placeholder = 'Enter a valid email';
-      setTimeout(() => { input.style.outline = ''; input.placeholder = 'your@email.com'; }, 1800);
-      return;
-    }
-    document.getElementById('form-box').classList.add('hidden');
-    document.getElementById('success-box').classList.add('visible');
-  }
-
+  // ── INIT ──
   document.addEventListener('DOMContentLoaded', () => {
     buildTicker();
     buildFeed();
+    fetchCount();
+
     document.getElementById('email-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') handleJoin();
     });
