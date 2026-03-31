@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PriceGhost — Breaking: Your Competitors Moved</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,700;1,9..144,900&family=IBM+Plex+Mono:wght@300;400;500&family=Barlow+Condensed:wght@500;700;900&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0e0c09;
+  --bg2:      #161410;
+  --bg3:      #1c1a15;
+  --ink:      #f0e8d8;
+  --ink2:     #d4c9b0;
+  --ink-mid:  #7a6e5a;
+  --ink-dim:  #3d3628;
+  --lime:     #c8f135;
+  --lime-dk:  #9ec11a;
+  --red:      #e8503a;
+  --green:    #4ade80;
+  --rule:     #2a2520;
+  --rule2:    #332e26;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  font-family: 'IBM Plex Mono', monospace;
+  overflow-x: hidden;
+}
+
+/* ── NOISE ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ── TICKER ── */
+.ticker-wrap {
+  background: var(--lime);
+  color: var(--bg);
+  padding: 0.45rem 0;
+  overflow: hidden;
+  border-bottom: 2px solid var(--lime-dk);
+  position: relative; z-index: 10;
+}
+
+.ticker-inner {
+  display: flex;
+  width: max-content;
+  animation: ticker 32s linear infinite;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 2.5rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  border-right: 1px solid rgba(0,0,0,0.15);
+  color: var(--bg);
+}
+
+.ticker-item .dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--bg);
+  display: inline-block;
+}
+
+.ticker-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-right: 0.4rem;
+  opacity: 0.55;
+}
+
+.t-up   { color: #b91c1c; font-weight: 700; }
+.t-down { color: #166534; font-weight: 700; }
+.t-new  { color: #854d0e; font-weight: 700; }
+
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  border-bottom: 3px double var(--rule2);
+  padding: 1.1rem 3rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: var(--bg2);
+}
+
+.masthead-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
+
+.masthead-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 900;
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.masthead-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  align-items: flex-end;
+}
+
+.masthead-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--ink-mid);
+  letter-spacing: 0.06em;
+}
+
+.edition-badge {
+  background: var(--lime);
+  color: var(--bg);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+}
+
+/* ── BREAKING BANNER ── */
+.breaking-banner {
+  background: var(--red);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 3rem;
+  border-bottom: 1px solid #c0392b;
+  animation: fadeIn 0.4s 0.2s ease both;
+}
+
+.breaking-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background: #fff;
+  color: var(--red);
+  padding: 0.1rem 0.5rem;
+  white-space: nowrap;
+}
+
+.breaking-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  opacity: 0.92;
+}
+
+/* ── MAIN GRID ── */
+.page {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 3rem 3rem;
+}
+
+/* ── LEFT ── */
+.left-col {
+  padding: 2.5rem 3rem 2.5rem 0;
+  border-right: 1px solid var(--rule2);
+}
+
+.kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  margin-bottom: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  animation: fadeUp 0.5s 0.3s ease both;
+}
+
+.kicker::before {
+  content: '';
+  display: inline-block;
+  width: 2rem;
+  height: 1.5px;
+  background: var(--ink-dim);
+}
+
+.headline {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 6vw, 5.2rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  margin-bottom: 1.4rem;
+  animation: fadeUp 0.6s 0.35s ease both;
+}
+
+.headline em {
+  font-style: italic;
+  color: var(--lime);
+}
+
+.deck {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--ink2);
+  max-width: 520px;
+  margin-bottom: 2.2rem;
+  border-top: 1px solid var(--rule2);
+  border-bottom: 1px solid var(--rule2);
+  padding: 1rem 0;
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+
+/* ── FORM ── */
+.form-section { animation: fadeUp 0.6s 0.5s ease both; }
+
+.form-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  margin-bottom: 0.7rem;
+  display: block;
+}
+
+.form-box {
+  border: 1px solid var(--rule2);
+  padding: 1.5rem;
+  background: var(--bg2);
+  position: relative;
+  max-width: 520px;
+}
+
+.form-box::before, .form-box::after {
+  content: '+';
+  position: absolute;
+  font-size: 1rem;
+  color: var(--ink-dim);
+  line-height: 1;
+}
+.form-box::before { top: -0.1rem; left: -0.1rem; }
+.form-box::after  { bottom: -0.3rem; right: -0.1rem; }
+
+.form-headline {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.25rem;
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+}
+
+.form-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--ink-mid);
+  margin-bottom: 1.2rem;
+  line-height: 1.5;
+}
+
+.form-sub strong { color: var(--ink2); }
+
+.input-row {
+  display: flex;
+  border: 1px solid var(--rule2);
+  transition: border-color 0.2s;
+}
+
+.input-row:focus-within {
+  border-color: var(--lime);
+}
+
+.input-row input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0.7rem 0.9rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  background: var(--bg3);
+  color: var(--ink);
+}
+
+.input-row input::placeholder { color: var(--ink-dim); }
+
+.input-row button {
+  background: var(--lime);
+  color: var(--bg);
+  border: none;
+  padding: 0.7rem 1.1rem;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.input-row button:hover { background: var(--lime-dk); }
+
+.form-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.9rem;
+}
+
+.proof-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--ink-mid);
+}
+
+.proof-text strong { color: var(--ink2); }
+
+.discount-pill {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--lime);
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--lime);
+}
+
+/* ── STATS ── */
+.stats-row {
+  display: flex;
+  margin-top: 2.2rem;
+  border: 1px solid var(--rule2);
+  max-width: 520px;
+  animation: fadeUp 0.6s 0.55s ease both;
+}
+
+.stat {
+  flex: 1;
+  padding: 0.9rem 1rem;
+  border-right: 1px solid var(--rule2);
+  text-align: center;
+}
+
+.stat:last-child { border-right: none; }
+
+.stat-val {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: var(--lime);
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--ink-mid);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── RIGHT COL ── */
+.right-col {
+  padding: 2.5rem 0 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  padding-bottom: 0.7rem;
+  border-bottom: 2px solid var(--rule2);
+  margin-bottom: 0;
+  animation: fadeIn 0.5s 0.6s ease both;
+}
+
+.live-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  background: var(--red);
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  animation: blink 1.4s ease-in-out infinite;
+  box-shadow: 0 0 6px var(--red);
+}
+
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+
+/* ── ALERT CARD ── */
+.alert-card {
+  border-bottom: 1px solid var(--rule);
+  border-left: 2px solid transparent;
+  padding: 1rem 0 1rem 0.75rem;
+  margin-left: -0.75rem;
+  animation: fadeUp 0.5s ease both;
+  transition: background 0.15s, border-left-color 0.15s;
+  cursor: default;
+}
+
+.alert-card:hover {
+  background: var(--bg2);
+  border-left-color: var(--lime);
+}
+
+.alert-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.alert-severity {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid;
+}
+
+.sev-critical { color: var(--red); border-color: var(--red); background: rgba(232,80,58,0.08); }
+.sev-high     { color: #f59e0b; border-color: #f59e0b; background: rgba(245,158,11,0.07); }
+.sev-medium   { color: var(--ink-mid); border-color: var(--rule2); }
+
+.alert-time {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--ink-dim);
+  margin-left: auto;
+}
+
+.alert-company {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--ink);
+  margin-bottom: 0.15rem;
+}
+
+.alert-description {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+
+.alert-change {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.4rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.change-up   { color: var(--red); }
+.change-down { color: var(--green); }
+
+/* ── STAMP ── */
+.stamp {
+  margin-top: 1.8rem;
+  animation: fadeIn 0.5s 1s ease both;
+  display: inline-block;
+}
+
+.stamp-inner {
+  border: 2px solid var(--lime);
+  padding: 0.8rem 1.2rem;
+  transform: rotate(-2deg);
+  background: transparent;
+  display: inline-block;
+  box-shadow: 0 0 18px rgba(200,241,53,0.1);
+}
+
+.stamp-text {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--lime);
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  border-top: 2px double var(--rule2);
+  padding: 0.8rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  animation: fadeIn 0.5s 0.8s ease both;
+  background: var(--bg2);
+}
+
+.footer-links {
+  display: flex;
+  gap: 1.8rem;
+}
+
+.footer-links a {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.footer-links a:hover { color: var(--lime); }
+
+.footer-copy {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  color: var(--ink-dim);
+}
+
+/* ── SUCCESS ── */
+.success-box { display: none; flex-direction: column; gap: 0.4rem; }
+.success-box.visible { display: flex; }
+.form-box.hidden { display: none; }
+
+.success-headline {
+  font-family: 'Fraunces', serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: 1.5rem;
+  color: var(--lime);
+}
+
+.success-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink-mid);
+  line-height: 1.6;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .page { grid-template-columns: 1fr; padding: 0 1.5rem 2rem; }
+  .left-col { padding: 2rem 0; border-right: none; border-bottom: 1px solid var(--rule2); }
+  .right-col { padding: 2rem 0 0; }
+  .masthead { padding: 1rem 1.5rem; }
+  .breaking-banner { padding: 0.5rem 1.5rem; }
+  .page-footer { padding: 0.8rem 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker"></div>
+</div>
+
+<header class="masthead">
+  <div>
+    <div class="masthead-label">Competitive Intelligence · API-First · For Builders</div>
+    <div class="masthead-title">👻 PriceGhost</div>
+  </div>
+  <div class="masthead-right">
+    <div class="masthead-meta">Est. 2025 · Vol. I · Issue 001</div>
+    <div class="masthead-meta">Pre-Launch Edition</div>
+    <div class="edition-badge">Early Access Open</div>
+  </div>
+</header>
+
+<div class="breaking-banner">
+  <span class="breaking-label">⚡ Breaking</span>
+  <span class="breaking-text">3 competitors changed pricing in the last 24 hours. Are you watching?</span>
+</div>
+
+<div class="page">
+  <div class="left-col">
+
+    <div class="kicker">Exclusive — First To Know</div>
+
+    <h1 class="headline">
+      Your rivals<br>
+      <em>moved.</em><br>
+      Did you?
+    </h1>
+
+    <p class="deck">
+      PriceGhost monitors any competitor pricing page and alerts you the instant something changes — price hike, new plan, removed free tier. API-first. $0 to start. No enterprise sales calls.
+    </p>
+
+    <div class="form-section">
+      <span class="form-label">📬 Join the waitlist — 50% off, forever</span>
+
+      <div class="form-box" id="form-box">
+        <div class="form-headline">Get the scoop before everyone else.</div>
+        <div class="form-sub">
+          <strong>267 founders</strong> already watching. Waitlist members lock in
+          <strong>50% off forever</strong> when we launch.
+        </div>
+        <div class="input-row">
+          <input type="email" id="email-input" placeholder="your@email.com" autocomplete="email" />
+          <button onclick="handleJoin()">Get Access →</button>
+        </div>
+        <div class="form-footer">
+          <span class="proof-text">No spam. Unsubscribe anytime.</span>
+          <span class="discount-pill">50% Off Forever</span>
+        </div>
+      </div>
+
+      <div class="success-box" id="success-box">
+        <div class="success-headline">You're in the newsroom. 🎉</div>
+        <div class="success-sub">
+          You'll get 50% off, forever, when we launch.<br>
+          We'll be in touch — stay sharp.
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-val">$0.001</span>
+        <span class="stat-label">Per check</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">5 min</span>
+        <span class="stat-label">Detection</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">Any</span>
+        <span class="stat-label">Website</span>
+      </div>
+      <div class="stat">
+        <span class="stat-val">$0</span>
+        <span class="stat-label">To start</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="sidebar-heading">
+      <span class="live-dot"></span>Live Intelligence Feed
+    </div>
+    <div id="alerts-feed"></div>
+    <div class="stamp">
+      <div class="stamp-inner">
+        <div class="stamp-text">👻 First to know.<br>Always.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="page-footer">
+  <div class="footer-links">
+    <a href="#">API Docs</a>
+    <a href="#">Twitter / X</a>
+    <a href="#">Indie Hackers</a>
+    <a href="#">GitHub</a>
+  </div>
+  <div class="footer-copy">© 2025 PriceGhost · Built in public · Solo dev</div>
+</footer>
+
+<script>
+  const tickerItems = [
+    { label: 'Notion',   text: 'Plus Plan +$4/mo',       cls: 't-up'   },
+    { label: 'Linear',   text: 'Free Tier Removed',       cls: 't-up'   },
+    { label: 'Vercel',   text: 'Pro Plan +$10/mo',        cls: 't-up'   },
+    { label: 'Loom',     text: 'Business −$6/mo',         cls: 't-down' },
+    { label: 'Figma',    text: 'Org Tier +$5/seat',       cls: 't-up'   },
+    { label: 'Stripe',   text: 'API Fees −0.1%',          cls: 't-down' },
+    { label: 'Intercom', text: 'New Scale Plan Added',    cls: 't-new'  },
+    { label: 'GitHub',   text: 'Copilot +$4/mo',          cls: 't-up'   },
+    { label: 'Slack',    text: 'Pro Annual Discount',     cls: 't-down' },
+    { label: 'Hubspot',  text: 'Free CRM Limits Cut',     cls: 't-up'   },
+  ];
+
+  const alerts = [
+    { severity: 'critical', sevClass: 'sev-critical', time: '2 min ago',  company: 'Linear',   description: 'Free tier silently removed. All existing users must upgrade.',         change: 'Free plan → Removed',       changeType: 'change-up',   arrow: '↑' },
+    { severity: 'high',     sevClass: 'sev-high',     time: '41 min ago', company: 'Notion',   description: 'Plus plan increased for new signups. Annual pricing unaffected.',      change: '$16/mo → $20/mo (+25%)',    changeType: 'change-up',   arrow: '↑' },
+    { severity: 'high',     sevClass: 'sev-high',     time: '3 hrs ago',  company: 'Vercel',   description: 'Pro plan monthly rate raised. Annual billing remains the same.',       change: '$20/mo → $30/mo (+50%)',    changeType: 'change-up',   arrow: '↑' },
+    { severity: 'medium',   sevClass: 'sev-medium',   time: '7 hrs ago',  company: 'Loom',     description: 'Business plan discounted, likely a response to Notion Clips.',         change: '$16/seat → $10/seat (−38%)', changeType: 'change-down', arrow: '↓' },
+    { severity: 'medium',   sevClass: 'sev-medium',   time: 'Yesterday',  company: 'Figma',    description: 'New Enterprise AI add-on introduced at $15/seat/mo.',                  change: 'New plan added',            changeType: 'change-up',   arrow: '+' },
+  ];
+
+  function buildTicker() {
+    const wrap = document.getElementById('ticker');
+    [...tickerItems, ...tickerItems].forEach(item => {
+      const el = document.createElement('span');
+      el.className = 'ticker-item';
+      el.innerHTML = `<span class="dot"></span><span class="ticker-label">${item.label}</span><span class="${item.cls}">${item.text}</span>`;
+      wrap.appendChild(el);
+    });
+  }
+
+  function buildFeed() {
+    const feed = document.getElementById('alerts-feed');
+    alerts.forEach((a, i) => {
+      const card = document.createElement('div');
+      card.className = 'alert-card';
+      card.style.animationDelay = `${0.65 + i * 0.08}s`;
+      card.innerHTML = `
+        <div class="alert-meta">
+          <span class="alert-severity ${a.sevClass}">${a.severity}</span>
+          <span class="alert-time">${a.time}</span>
+        </div>
+        <div class="alert-company">${a.company}</div>
+        <div class="alert-description">${a.description}</div>
+        <div class="alert-change ${a.changeType}"><span>${a.arrow}</span>${a.change}</div>
+      `;
+      feed.appendChild(card);
+    });
+  }
+
+  function handleJoin() {
+    const input = document.getElementById('email-input');
+    const email = input.value.trim();
+    if (!email || !email.includes('@')) {
+      input.style.outline = '2px solid #e8503a';
+      input.placeholder = 'Enter a valid email';
+      setTimeout(() => { input.style.outline = ''; input.placeholder = 'your@email.com'; }, 1800);
+      return;
+    }
+    document.getElementById('form-box').classList.add('hidden');
+    document.getElementById('success-box').classList.add('visible');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    buildTicker();
+    buildFeed();
+    document.getElementById('email-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleJoin();
+    });
+  });
+</script>
+</body>
+</html>
