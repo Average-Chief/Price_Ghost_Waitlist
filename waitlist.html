@@ -26,6 +26,8 @@
   --green:    #4ade80;
   --rule:     #2a2520;
   --rule2:    #332e26;
+  /* spacing tokens so every breakpoint adjusts one var */
+  --page-px:  3rem;
 }
 
 html, body {
@@ -80,6 +82,7 @@ body::before {
   width: 5px; height: 5px; border-radius: 50%;
   background: var(--bg);
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .ticker-label {
@@ -102,12 +105,13 @@ body::before {
 /* ── MASTHEAD ── */
 .masthead {
   border-bottom: 3px double var(--rule2);
-  padding: 1.1rem 3rem 1rem;
+  padding: 1.1rem var(--page-px) 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   background: var(--bg2);
+  flex-wrap: wrap;
 }
 
 .masthead-label {
@@ -116,11 +120,12 @@ body::before {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--ink-mid);
+  margin-bottom: 0.3rem;
 }
 
 .masthead-title {
   font-family: 'Fraunces', serif;
-  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-size: clamp(1.8rem, 5vw, 3.2rem);
   font-weight: 900;
   font-style: italic;
   line-height: 1;
@@ -152,6 +157,7 @@ body::before {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 0.2rem 0.6rem;
+  white-space: nowrap;
 }
 
 /* ── BREAKING BANNER ── */
@@ -160,10 +166,11 @@ body::before {
   color: #fff;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 3rem;
+  gap: 0.75rem;
+  padding: 0.5rem var(--page-px);
   border-bottom: 1px solid #c0392b;
   animation: fadeIn 0.4s 0.2s ease both;
+  flex-wrap: wrap;
 }
 
 .breaking-label {
@@ -176,6 +183,7 @@ body::before {
   color: var(--red);
   padding: 0.1rem 0.5rem;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .breaking-text {
@@ -191,13 +199,14 @@ body::before {
   gap: 0;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 3rem 3rem;
+  padding: 0 var(--page-px) 3rem;
 }
 
 /* ── LEFT ── */
 .left-col {
   padding: 2.5rem 3rem 2.5rem 0;
   border-right: 1px solid var(--rule2);
+  min-width: 0; /* prevent grid blowout */
 }
 
 .kicker {
@@ -220,12 +229,13 @@ body::before {
   width: 2rem;
   height: 1.5px;
   background: var(--ink-dim);
+  flex-shrink: 0;
 }
 
 .headline {
   font-family: 'Fraunces', serif;
   font-weight: 900;
-  font-size: clamp(3rem, 6vw, 5.2rem);
+  font-size: clamp(2.6rem, 7vw, 5.2rem);
   line-height: 0.92;
   letter-spacing: -0.03em;
   color: var(--ink);
@@ -240,7 +250,7 @@ body::before {
 
 .deck {
   font-family: 'Fraunces', serif;
-  font-size: 1.05rem;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
   font-weight: 300;
   line-height: 1.65;
   color: var(--ink2);
@@ -321,6 +331,7 @@ body::before {
   font-size: 0.8rem;
   background: var(--bg3);
   color: var(--ink);
+  min-width: 0;
 }
 
 .input-row input::placeholder { color: var(--ink-dim); }
@@ -338,6 +349,7 @@ body::before {
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
+  flex-shrink: 0;
 }
 
 .input-row button:hover { background: var(--lime-dk); }
@@ -347,6 +359,8 @@ body::before {
   align-items: center;
   justify-content: space-between;
   margin-top: 0.9rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .proof-text {
@@ -367,6 +381,7 @@ body::before {
   color: var(--lime);
   padding: 0.2rem 0.6rem;
   border: 1px solid var(--lime);
+  white-space: nowrap;
 }
 
 /* ── STATS ── */
@@ -376,13 +391,15 @@ body::before {
   border: 1px solid var(--rule2);
   max-width: 520px;
   animation: fadeUp 0.6s 0.55s ease both;
+  flex-wrap: wrap; /* wraps on tiny screens */
 }
 
 .stat {
-  flex: 1;
+  flex: 1 1 4rem;
   padding: 0.9rem 1rem;
   border-right: 1px solid var(--rule2);
   text-align: center;
+  min-width: 60px;
 }
 
 .stat:last-child { border-right: none; }
@@ -390,7 +407,7 @@ body::before {
 .stat-val {
   font-family: 'Fraunces', serif;
   font-weight: 900;
-  font-size: 1.4rem;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
   color: var(--lime);
   display: block;
   margin-bottom: 0.2rem;
@@ -409,6 +426,7 @@ body::before {
   padding: 2.5rem 0 2.5rem 2.5rem;
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .sidebar-heading {
@@ -460,6 +478,7 @@ body::before {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.4rem;
+  flex-wrap: wrap;
 }
 
 .alert-severity {
@@ -470,6 +489,7 @@ body::before {
   text-transform: uppercase;
   padding: 0.1rem 0.45rem;
   border: 1px solid;
+  white-space: nowrap;
 }
 
 .sev-critical { color: var(--red); border-color: var(--red); background: rgba(232,80,58,0.08); }
@@ -541,7 +561,7 @@ body::before {
 /* ── FOOTER ── */
 .page-footer {
   border-top: 2px double var(--rule2);
-  padding: 0.8rem 3rem;
+  padding: 0.8rem var(--page-px);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -549,11 +569,14 @@ body::before {
   margin: 0 auto;
   animation: fadeIn 0.5s 0.8s ease both;
   background: var(--bg2);
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .footer-links {
   display: flex;
-  gap: 1.8rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .footer-links a {
@@ -604,14 +627,121 @@ body::before {
   to   { opacity: 1; }
 }
 
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .page { grid-template-columns: 1fr; padding: 0 1.5rem 2rem; }
-  .left-col { padding: 2rem 0; border-right: none; border-bottom: 1px solid var(--rule2); }
-  .right-col { padding: 2rem 0 0; }
-  .masthead { padding: 1rem 1.5rem; }
-  .breaking-banner { padding: 0.5rem 1.5rem; }
-  .page-footer { padding: 0.8rem 1.5rem; flex-direction: column; gap: 0.5rem; text-align: center; }
+/* ════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+════════════════════════════════════════ */
+
+/* ── Large tablet / small desktop ── */
+@media (max-width: 1024px) {
+  :root { --page-px: 2rem; }
+
+  .page { grid-template-columns: 1fr 320px; }
+  .left-col { padding-right: 2rem; }
+  .right-col { padding-left: 1.75rem; }
+}
+
+/* ── Tablet portrait — stack to single column ── */
+@media (max-width: 860px) {
+  :root { --page-px: 1.5rem; }
+
+  .page {
+    grid-template-columns: 1fr;
+    padding-bottom: 2rem;
+  }
+
+  .left-col {
+    padding: 2rem 0;
+    border-right: none;
+    border-bottom: 1px solid var(--rule2);
+  }
+
+  .right-col {
+    padding: 2rem 0 0;
+  }
+
+  /* Show the alerts feed inline, remove the stamp (less relevant on mobile) */
+  .stamp { display: none; }
+
+  /* Masthead: allow wrapping, keep ghost title prominent */
+  .masthead {
+    flex-wrap: wrap;
+    row-gap: 0.6rem;
+  }
+
+  .masthead-right {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* Footer stacks */
+  .page-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 540px) {
+  :root { --page-px: 1rem; }
+
+  /* Masthead: stack vertically */
+  .masthead {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.9rem var(--page-px);
+    gap: 0.5rem;
+  }
+
+  .masthead-right {
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .masthead-title { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+
+  /* Breaking banner: smaller text, wrap gracefully */
+  .breaking-banner {
+    flex-wrap: wrap;
+    row-gap: 0.3rem;
+    padding: 0.5rem var(--page-px);
+  }
+  .breaking-text { font-size: 0.65rem; }
+
+  /* Headline */
+  .headline { font-size: clamp(2.4rem, 11vw, 3rem); }
+
+  /* Form: stack email + button vertically */
+  .input-row { flex-direction: column; }
+  .input-row input { border-bottom: 1px solid var(--rule2); }
+  .input-row button { text-align: center; padding: 0.75rem 1rem; }
+
+  /* Stats: 2×2 grid on tiny screens */
+  .stats-row { flex-wrap: wrap; }
+  .stat { flex: 1 1 45%; }
+  /* restore borders for 2×2 */
+  .stat:nth-child(2) { border-right: none; }
+  .stat:nth-child(3) { border-top: 1px solid var(--rule2); }
+  .stat:nth-child(4) { border-top: 1px solid var(--rule2); border-right: none; }
+
+  /* Alert cards: slightly tighter */
+  .alert-description { font-size: 0.64rem; }
+
+  /* Footer links: wrap & shrink gaps */
+  .footer-links { gap: 1rem; }
+  .footer-copy { font-size: 0.58rem; }
+
+  /* form-box: tighter padding */
+  .form-box { padding: 1.1rem; }
+}
+
+/* ── Very small phones ── */
+@media (max-width: 360px) {
+  .headline { font-size: 2.2rem; }
+  .masthead-label { display: none; } /* de-clutter tiny header */
+  .ticker-item { padding: 0 1.5rem; font-size: 0.65rem; }
 }
 </style>
 </head>
@@ -725,7 +855,6 @@ body::before {
 </footer>
 
 <script>
-  // ── SUPABASE CONFIG ──
   const SUPABASE_URL = 'https://ccfhdprbsjzyfkgmrlik.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjZmhkcHJic2p6eWZrZ21ybGlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5NjczMjUsImV4cCI6MjA5MDU0MzMyNX0.H_l-LxhXf-n-Cw1_4YBcBWPoyEaqTm5V1DdhPD9C7Xo';
 
@@ -735,7 +864,6 @@ body::before {
     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
   };
 
-  // ── FETCH LIVE COUNT ──
   async function fetchCount() {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist?select=id`, {
@@ -744,7 +872,6 @@ body::before {
       const count = res.headers.get('content-range')?.split('/')[1];
       const el = document.getElementById('waitlist-count');
       if (count !== null && count !== undefined && count !== '*') {
-        // animate the number counting up
         const target = parseInt(count, 10);
         let current = Math.max(0, target - 30);
         const step = () => {
@@ -761,13 +888,11 @@ body::before {
     }
   }
 
-  // ── SUBMIT EMAIL ──
   async function handleJoin() {
     const input = document.getElementById('email-input');
     const btn   = document.querySelector('.input-row button');
     const email = input.value.trim();
 
-    // basic validation
     if (!email || !email.includes('@') || !email.includes('.')) {
       input.style.outline = '2px solid #e8503a';
       input.placeholder = 'Enter a valid email';
@@ -775,7 +900,6 @@ body::before {
       return;
     }
 
-    // loading state
     btn.textContent = 'Joining…';
     btn.disabled = true;
     input.disabled = true;
@@ -788,42 +912,29 @@ body::before {
       });
 
       if (res.status === 201) {
-        // success — show confirmation
         document.getElementById('form-box').classList.add('hidden');
         document.getElementById('success-box').classList.add('visible');
-        // refresh the counter to reflect new signup
         fetchCount();
-
       } else if (res.status === 409) {
-        // duplicate email — already on the list
         btn.textContent = 'Get Access →';
         btn.disabled = false;
         input.disabled = false;
         input.style.outline = '2px solid #f59e0b';
         input.value = '';
         input.placeholder = 'Already on the list!';
-        setTimeout(() => {
-          input.style.outline = '';
-          input.placeholder = 'your@email.com';
-        }, 2500);
-
+        setTimeout(() => { input.style.outline = ''; input.placeholder = 'your@email.com'; }, 2500);
       } else {
         throw new Error(`Unexpected status ${res.status}`);
       }
-
     } catch (e) {
       btn.textContent = 'Try again';
       btn.disabled = false;
       input.disabled = false;
       input.style.outline = '2px solid #e8503a';
-      setTimeout(() => {
-        btn.textContent = 'Get Access →';
-        input.style.outline = '';
-      }, 2000);
+      setTimeout(() => { btn.textContent = 'Get Access →'; input.style.outline = ''; }, 2000);
     }
   }
 
-  // ── TICKER ──
   const tickerItems = [
     { label: 'Notion',   text: 'Plus Plan +$4/mo',    cls: 't-up'   },
     { label: 'Linear',   text: 'Free Tier Removed',    cls: 't-up'   },
@@ -847,7 +958,6 @@ body::before {
     });
   }
 
-  // ── ALERTS FEED ──
   const alerts = [
     { severity: 'critical', sevClass: 'sev-critical', time: '2 min ago',  company: 'Linear',   description: 'Free tier silently removed. All existing users must upgrade.',       change: 'Free plan → Removed',        changeType: 'change-up',   arrow: '↑' },
     { severity: 'high',     sevClass: 'sev-high',     time: '41 min ago', company: 'Notion',   description: 'Plus plan increased for new signups. Annual pricing unaffected.',    change: '$16/mo → $20/mo (+25%)',     changeType: 'change-up',   arrow: '↑' },
@@ -877,7 +987,6 @@ body::before {
     });
   }
 
-  // ── INIT ──
   document.addEventListener('DOMContentLoaded', () => {
     buildTicker();
     buildFeed();
